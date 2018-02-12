@@ -13,12 +13,9 @@ const navigatorStyle = {
   statusBarColor: 'black',
   statusBarTextColorScheme: 'light',
   navigationBarColor: 'black',
-  navBarBackgroundColor: '#0a0a0a',
-  navBarTextColor: 'white',
-  navBarButtonColor: 'white',
-  tabBarButtonColor: 'red',
-  tabBarSelectedButtonColor: 'red',
-  tabBarBackgroundColor: 'white',
+  navBarBackgroundColor: 'white',
+  navBarTextColor: 'black',
+  navBarButtonColor: 'black',
 };
 
 Navigation.startSingleScreenApp({
@@ -26,5 +23,10 @@ Navigation.startSingleScreenApp({
     screen: 'Scheduler',
     title: 'Scheduler',
     navigatorStyle,
+  },
+  drawer: {
+    left: {
+      screen: 'Drawer',
+    },
   },
 });

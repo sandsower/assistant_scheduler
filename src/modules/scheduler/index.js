@@ -2,12 +2,26 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import NavigationBar from 'react-native-navbar';
-import SideMenu from 'react-native-side-menu';
 
 import CalendarItem from './components/calendar-item';
 import Menu from './components/menu';
 
 export default class Scheduler extends Component {
+  static navigatorButtons = {
+    rightButtons: [
+      {
+        title: 'Generate Report', // for a textual button, provide the button title (label)
+        id: 'gen_report', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+        showAsAction: 'ifRoom', // optional, Android only. Control how the button is displayed in the Toolbar. Accepted valued: 'ifRoom' (default) - Show this item as a button in an Action Bar if the system decides there is room for it. 'always' - Always show this item as a button in an Action Bar. 'withText' - When this item is in the action bar, always show it with a text label even if it also has an icon specified. 'never' - Never show this item as a button in an Action Bar.
+      },
+    ],
+    leftButtons: [
+      {
+        id: 'sideMenu', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+      },
+    ],
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -35,21 +49,6 @@ export default class Scheduler extends Component {
   render = () => {
     return (
       <View style={styles.container}>
-        <NavigationBar
-          title={{
-            title: 'Planner',
-          }}
-          rightButton={{
-            title: 'Generate post',
-            handler: () => alert('Generated!'),
-          }}
-          leftButton={{
-            title: 'Menu',
-            handler: () => {
-              this.toggleMenu();
-            },
-          }}
-        />
         <Agenda
           items={this.state.items}
           loadItemsForMonth={this.loadItemsForMonth.bind(this)}
