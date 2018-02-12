@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import NavigationBar from 'react-native-navbar';
+import SideMenu from 'react-native-side-menu';
+
+import CalendarItem from './calendar-item';
+import Menu from './menu';
 
 export default class AgendaScreen extends Component {
   constructor(props) {
@@ -11,45 +15,53 @@ export default class AgendaScreen extends Component {
     };
   }
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <NavigationBar
-          title={{
-            title: 'Planner',
-          }}
-          rightButton={{
-            title: 'Generate post',
-            handler: () => alert('hello!'),
-          }}
-          leftButton={{
-            title: 'Menu',
-            handler: () => alert('hello!'),
-          }}
-        />
-        <Agenda
-          items={this.state.items}
-          loadItemsForMonth={this.loadItemsForMonth.bind(this)}
-          selected={'2017-05-16'}
-          renderItem={this.renderItem.bind(this)}
-          renderEmptyDate={this.renderEmptyDate.bind(this)}
-          rowHasChanged={this.rowHasChanged.bind(this)}
+  updateMenuState(isOpen) {
+    this.setState({ isOpen });
+  }
 
-          // markingType={'period'}
-          // markedDates={{
-          //    '2017-05-08': {textColor: '#666'},
-          //    '2017-05-09': {textColor: '#666'},
-          //    '2017-05-14': {startingDay: true, endingDay: true, color: 'blue'},
-          //    '2017-05-21': {startingDay: true, color: 'blue'},
-          //    '2017-05-22': {endingDay: true, color: 'gray'},
-          //    '2017-05-24': {startingDay: true, color: 'gray'},
-          //    '2017-05-25': {color: 'gray'},
-          //    '2017-05-26': {endingDay: true, color: 'gray'}}}
-          // monthFormat={'yyyy'}
-          // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
-          //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
-        />
-      </View>
+  onMenuItemSelected = item => {
+    this.setState({
+      isOpen: false,
+      selectedItem: item,
+    });
+  };
+
+  toggleMenu() {
+    this.setState({
+      isOpen: !this.state.isOpen,
+    });
+  }
+
+  render() {
+    const menu = <Menu onItemSelected={this.onMenuItemSelected} />;
+
+    return (
+      <SideMenu menu={menu} isOpen={this.state.isOpen} onChange={isOpen => this.updateMenuState(isOpen)}>
+        <View style={styles.container}>
+          <NavigationBar
+            title={{
+              title: 'Planner',
+            }}
+            rightButton={{
+              title: 'Generate post',
+              handler: () => alert('Generated!'),
+            }}
+            leftButton={{
+              title: 'Menu',
+              handler: () => {
+                this.toggleMenu();
+              },
+            }}
+          />
+          <Agenda
+            items={this.state.items}
+            loadItemsForMonth={this.loadItemsForMonth.bind(this)}
+            renderItem={this.renderItem.bind(this)}
+            renderEmptyDate={this.renderEmptyDate.bind(this)}
+            rowHasChanged={this.rowHasChanged.bind(this)}
+          />
+        </View>
+      </SideMenu>
     );
   }
 
@@ -60,8 +72,7 @@ export default class AgendaScreen extends Component {
       const strTime = this.timeToString(time);
 
       if (!this.state.items[strTime]) {
-        this.state.items[strTime] = [];
-        const numItems = 0;
+        this.state.items[strTime] = [{ name: 'Test', height: 20 }];
       }
     }
     //console.log(this.state.items);
@@ -76,11 +87,7 @@ export default class AgendaScreen extends Component {
   }
 
   renderItem(item) {
-    return (
-      <View style={[styles.item, { height: item.height }]}>
-        <Text>{item.name}</Text>
-      </View>
-    );
+    return <CalendarItem height={item.height} name={item.name} />;
   }
 
   renderEmptyDate() {
