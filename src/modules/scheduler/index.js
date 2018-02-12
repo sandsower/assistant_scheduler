@@ -4,10 +4,10 @@ import { Agenda } from 'react-native-calendars';
 import NavigationBar from 'react-native-navbar';
 import SideMenu from 'react-native-side-menu';
 
-import CalendarItem from './calendar-item';
-import Menu from './menu';
+import CalendarItem from './components/calendar-item';
+import Menu from './components/menu';
 
-export default class AgendaScreen extends Component {
+export default class Scheduler extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,38 +32,34 @@ export default class AgendaScreen extends Component {
     });
   }
 
-  render() {
-    const menu = <Menu onItemSelected={this.onMenuItemSelected} />;
-
+  render = () => {
     return (
-      <SideMenu menu={menu} isOpen={this.state.isOpen} onChange={isOpen => this.updateMenuState(isOpen)}>
-        <View style={styles.container}>
-          <NavigationBar
-            title={{
-              title: 'Planner',
-            }}
-            rightButton={{
-              title: 'Generate post',
-              handler: () => alert('Generated!'),
-            }}
-            leftButton={{
-              title: 'Menu',
-              handler: () => {
-                this.toggleMenu();
-              },
-            }}
-          />
-          <Agenda
-            items={this.state.items}
-            loadItemsForMonth={this.loadItemsForMonth.bind(this)}
-            renderItem={this.renderItem.bind(this)}
-            renderEmptyDate={this.renderEmptyDate.bind(this)}
-            rowHasChanged={this.rowHasChanged.bind(this)}
-          />
-        </View>
-      </SideMenu>
+      <View style={styles.container}>
+        <NavigationBar
+          title={{
+            title: 'Planner',
+          }}
+          rightButton={{
+            title: 'Generate post',
+            handler: () => alert('Generated!'),
+          }}
+          leftButton={{
+            title: 'Menu',
+            handler: () => {
+              this.toggleMenu();
+            },
+          }}
+        />
+        <Agenda
+          items={this.state.items}
+          loadItemsForMonth={this.loadItemsForMonth.bind(this)}
+          renderItem={this.renderItem.bind(this)}
+          renderEmptyDate={this.renderEmptyDate.bind(this)}
+          rowHasChanged={this.rowHasChanged.bind(this)}
+        />
+      </View>
     );
-  }
+  };
 
   loadItemsForMonth(monthDate) {
     // Fills in 15 before and 85 after the checked date
