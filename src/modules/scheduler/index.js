@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, AsyncStorage } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import NavigationBar from 'react-native-navbar';
 
@@ -84,34 +84,58 @@ export default class Scheduler extends Component {
     );
   };
 
-  loadItemsForMonth(monthDate) {
-    // Fills in 15 before and 85 after the checked date
-    for (let i = 0; i < 10; i++) {
-      const time = monthDate.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = this.timeToString(time);
+  async loadItemsForMonth(monthDate) {
+    const strTime = monthDate.dateString;
+    this.state.items[strTime] = [];
 
-      // Retrieve entries here
-      this.state.items[strTime] = [
-        { type: 'ASSISTANT', name: 'Test 1', height: 50, date: strTime },
-        { type: 'ASSISTANT', name: 'Test 2', height: 50, date: strTime },
-        // { type: 'ASSISTANT', name: 'Test 3', height: 60, date: strTime },
-      ];
+    try {
+      const value = await AsyncStorage.getItem(strTime);
+
+      if (value !== null) {
+        // We have data!!
+        console.log(value);
+        this.state.items[strTime] = JSON.parse(value);
+      } else {
+        this.state.items[strTime] = [];
+      }
 
       this.state.items[strTime].push({ type: 'ADD_EVENT', date: strTime });
+      //console.log(this.state.items);
+      const newItems = {};
+      Object.keys(this.state.items).forEach(key => {
+        newItems[key] = this.state.items[key];
+      });
+      this.setState({
+        items: newItems,
+      });
+      // console.log(`Load Items for ${day.year}-${day.month}`);
+    } catch (error) {
+      // Error retrieving data
+      console.log(error.message);
     }
-    //console.log(this.state.items);
-    const newItems = {};
-    Object.keys(this.state.items).forEach(key => {
-      newItems[key] = this.state.items[key];
-    });
-    this.setState({
-      items: newItems,
-    });
-    // console.log(`Load Items for ${day.year}-${day.month}`);
   }
 
-  onAddPressed(date) {
-    console.log(date);
+  async onAddPressed(date) {
+    try {
+      const value = await AsyncStorage.getItem(date);
+
+      console.log(value);
+      let parsedInfo = [];
+      if (value !== null) {
+        // We have data!!
+        console.log(value);
+        parsedInfo = JSON.parse(value);
+      }
+      parsedInfo.push({ type: 'ASSISTANT', height: 50, name: 'Testing! ' + date });
+
+      AsyncStorage.setItem(date, JSON.stringify(parsedInfo));
+      console.log(this.loadItemsForMonth);
+      //this.loadItemsForMonth({ dateString: date });
+      this.loadItemsForMonth({ dateString: date });
+    } catch (error) {
+      // Error retrieving data
+      console.log(error.message);
+    }
   }
 
   renderItem(item) {
