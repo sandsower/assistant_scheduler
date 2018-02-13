@@ -12,12 +12,13 @@ export default class Scheduler extends Component {
       {
         title: 'Generate Report', // for a textual button, provide the button title (label)
         id: 'gen_report', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-        showAsAction: 'ifRoom', // optional, Android only. Control how the button is displayed in the Toolbar. Accepted valued: 'ifRoom' (default) - Show this item as a button in an Action Bar if the system decides there is room for it. 'always' - Always show this item as a button in an Action Bar. 'withText' - When this item is in the action bar, always show it with a text label even if it also has an icon specified. 'never' - Never show this item as a button in an Action Bar.
+        showAsAction: 'always', // optional, Android only. Control how the button is displayed in the Toolbar. Accepted valued: 'ifRoom' (default) - Show this item as a button in an Action Bar if the system decides there is room for it. 'always' - Always show this item as a button in an Action Bar. 'withText' - When this item is in the action bar, always show it with a text label even if it also has an icon specified. 'never' - Never show this item as a button in an Action Bar.
       },
     ],
     leftButtons: [
       {
-        id: 'sideMenu', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+        id: 'accept', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+        showAsAction: 'always', // optional, Android only. Control how the button is displayed in the Toolbar. Accepted valued: 'ifRoom' (default) - Show this item as a button in an Action Bar if the system decides there is room for it. 'always' - Always show this item as a button in an Action Bar. 'withText' - When this item is in the action bar, always show it with a text label even if it also has an icon specified. 'never' - Never show this item as a button in an Action Bar.
       },
     ],
   };
@@ -27,6 +28,7 @@ export default class Scheduler extends Component {
     this.state = {
       items: {},
     };
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   updateMenuState(isOpen) {
@@ -44,6 +46,28 @@ export default class Scheduler extends Component {
     this.setState({
       isOpen: !this.state.isOpen,
     });
+  }
+
+  onNavigatorEvent(event) {
+    console.log(event.id === 'sideMenu');
+    switch (event.id) {
+      case 'accept': // For now
+        this.props.navigator.push({
+          screen: 'Assistants', // unique ID registered with Navigation.registerScreen
+          title: 'Manage assistants', // navigation bar title of the pushed screen (optional)
+          passProps: {}, // Object that will be passed as props to the pushed screen (optional)
+          animated: true, // does the push have transition animation or does it happen immediately (optional)
+        });
+        break;
+
+      case 'gen_report':
+        console.log('Generating!');
+        break;
+
+      default:
+        console.log('huh?');
+        break;
+    }
   }
 
   render = () => {
