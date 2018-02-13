@@ -5,6 +5,7 @@ import NavigationBar from 'react-native-navbar';
 
 import CalendarItem from './components/calendar-item';
 import Menu from './components/menu';
+import AddButon from '../global/addButton';
 
 export default class Scheduler extends Component {
   static navigatorButtons = {
@@ -49,7 +50,6 @@ export default class Scheduler extends Component {
   }
 
   onNavigatorEvent(event) {
-    console.log(event.id === 'sideMenu');
     switch (event.id) {
       case 'accept': // For now
         this.props.navigator.push({
@@ -90,9 +90,14 @@ export default class Scheduler extends Component {
       const time = monthDate.timestamp + i * 24 * 60 * 60 * 1000;
       const strTime = this.timeToString(time);
 
-      if (!this.state.items[strTime]) {
-        this.state.items[strTime] = [{ name: 'Test', height: 20 }];
-      }
+      // Retrieve entries here
+      this.state.items[strTime] = [
+        { type: 'ASSISTANT', name: 'Test 1', height: 50, date: strTime },
+        { type: 'ASSISTANT', name: 'Test 2', height: 50, date: strTime },
+        // { type: 'ASSISTANT', name: 'Test 3', height: 60, date: strTime },
+      ];
+
+      this.state.items[strTime].push({ type: 'ADD_EVENT', date: strTime });
     }
     //console.log(this.state.items);
     const newItems = {};
@@ -105,12 +110,34 @@ export default class Scheduler extends Component {
     // console.log(`Load Items for ${day.year}-${day.month}`);
   }
 
+  onAddPressed(date) {
+    console.log(date);
+  }
+
   renderItem(item) {
-    return <CalendarItem height={item.height} name={item.name} />;
+    if (item.type === 'ASSISTANT') {
+      return (
+        <View style={styles.item}>
+          <CalendarItem height={item.height} name={item.name} />
+        </View>
+      );
+    } else if (item.type === 'ADD_EVENT') {
+      return (
+        <View style={styles.add}>
+          <AddButon date={item.date} onAddPressed={this.onAddPressed} />
+        </View>
+      );
+    }
   }
 
   renderEmptyDate() {
-    return <View style={styles.emptyDate} />;
+    return (
+      <View style={styles.emptyDate}>
+        <View style={styles.add}>
+          <AddButon date={item.date} onAddPressed={this.onAddPressed} />
+        </View>
+      </View>
+    );
   }
 
   rowHasChanged(r1, r2) {
@@ -131,6 +158,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     marginTop: 17,
+  },
+  add: {
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyDate: {
     height: 15,

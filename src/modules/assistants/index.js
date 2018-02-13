@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity, ToastAndroid, StyleSheet } from 'react-na
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     flex: 1,
   },
 });
