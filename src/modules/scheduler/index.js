@@ -65,7 +65,7 @@ export default class Scheduler extends Component {
         break;
 
       default:
-        console.log('huh?');
+        console.log(event.id + ' huh?');
         break;
     }
   }
@@ -84,35 +84,45 @@ export default class Scheduler extends Component {
     );
   };
 
-  async loadItemsForMonth(monthDate) {
-    const strTime = monthDate.dateString;
-    this.state.items[strTime] = [];
+  daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
 
-    try {
-      const value = await AsyncStorage.getItem(strTime);
-
-      if (value !== null) {
-        // We have data!!
-        console.log(value);
-        this.state.items[strTime] = JSON.parse(value);
-      } else {
+  loadItemsForMonth({ year, month }) {
+    setTimeout(() => {
+      const totalDays = this.daysInMonth(year, month);
+      for (i = 1; i <= totalDays; i++) {
+        const newDate = new Date(year, month - 1, i);
+        const strTime = newDate.toISOString().split('T')[0];
+        console.log(strTime);
         this.state.items[strTime] = [];
-      }
+        AsyncStorage.getItem(strTime)
+          .then(value => {
+            if (value !== null) {
+              this.state.items[strTime] = JSON.parse(value);
+            } else {
+              console.log('No items!');
+              this.state.items[strTime] = [];
+            }
 
-      this.state.items[strTime].push({ type: 'ADD_EVENT', date: strTime });
-      //console.log(this.state.items);
-      const newItems = {};
-      Object.keys(this.state.items).forEach(key => {
-        newItems[key] = this.state.items[key];
-      });
-      this.setState({
-        items: newItems,
-      });
-      // console.log(`Load Items for ${day.year}-${day.month}`);
-    } catch (error) {
-      // Error retrieving data
-      console.log(error.message);
-    }
+            this.state.items[strTime].push({ type: 'ADD_EVENT', date: strTime });
+            const newItems = {};
+
+            Object.keys(this.state.items).forEach(key => {
+              newItems[key] = this.state.items[key];
+            });
+
+            console.log('Setting new items: ' + JSON.stringify(newItems));
+            this.setState({
+              items: newItems,
+            });
+          })
+          .catch(error => {
+            console.log(error.message);
+          });
+      }
+    }, 1);
+    console.log(JSON.stringify(this.state.items));
   }
 
   async onAddPressed(date) {
@@ -130,7 +140,6 @@ export default class Scheduler extends Component {
 
       AsyncStorage.setItem(date, JSON.stringify(parsedInfo));
       console.log(this.loadItemsForMonth);
-      //this.loadItemsForMonth({ dateString: date });
       this.loadItemsForMonth({ dateString: date });
     } catch (error) {
       // Error retrieving data
@@ -139,6 +148,7 @@ export default class Scheduler extends Component {
   }
 
   renderItem(item) {
+    console.log('Loading item with type ' + item.type + ' and date ' + item.date);
     if (item.type === 'ASSISTANT') {
       return (
         <View style={styles.item}>
@@ -155,17 +165,11 @@ export default class Scheduler extends Component {
   }
 
   renderEmptyDate() {
-    return (
-      <View style={styles.emptyDate}>
-        <View style={styles.add}>
-          <AddButon date={item.date} onAddPressed={this.onAddPressed} />
-        </View>
-      </View>
-    );
+    return <View style={styles.emptyDate} />;
   }
 
   rowHasChanged(r1, r2) {
-    return r1.name !== r2.name;
+    return r1.date !== r2.date;
   }
 
   timeToString(time) {
