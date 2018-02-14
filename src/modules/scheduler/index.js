@@ -140,27 +140,9 @@ export default class Scheduler extends Component {
       style: {
         backgroundBlur: 'dark', // 'dark' / 'light' / 'xlight' / 'none' - the type of blur on the background
         backgroundColor: 'black', // tint color for the background, you can specify alpha here (optional)
+        tapBackgroundToDismiss: true, // dismisses LightBox on background taps (optional)
       },
     });
-    // try {
-    //   const value = await AsyncStorage.getItem(date);
-
-    //   console.log(value);
-    //   let parsedInfo = [];
-    //   if (value !== null) {
-    //     // We have data!!
-    //     console.log(value);
-    //     parsedInfo = JSON.parse(value);
-    //   }
-    //   parsedInfo.push({ type: 'ASSISTANT', height: 50, name: 'Testing! ' + date });
-
-    //   AsyncStorage.setItem(date, JSON.stringify(parsedInfo));
-    //   console.log(this.loadItemsForMonth);
-    //   this.loadItemsForMonth({ dateString: date });
-    // } catch (error) {
-    //   // Error retrieving data
-    //   console.log(error.message);
-    // }
   }
 
   renderItem(item) {

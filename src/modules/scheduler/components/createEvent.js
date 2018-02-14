@@ -31,8 +31,12 @@ const styles = StyleSheet.create({
   },
   name: {
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+  },
+  selectAssistant: {
+    height: 40,
+  },
+  selectAssistantFont: {
+    fontSize: 15,
   },
 });
 
@@ -43,6 +47,7 @@ export default class CreateEvent extends Component {
       assistants: [],
       assistant: '',
       description: 'Description',
+      title: 'Create Event',
     };
     this.loadAssistants();
   }
@@ -85,12 +90,23 @@ export default class CreateEvent extends Component {
     }
   }
 
+  adjustFrame(frame) {
+    frame.top = Dimensions.get('window').height * 0.4;
+    frame.left = Dimensions.get('window').width * 0.17;
+    return frame;
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <View style={{ flex: 8 }}>
           <Text style={styles.title}>{this.props.title}</Text>
-          <ModalDropdown style={styles.name} options={this.state.assistants} />
+          <ModalDropdown
+            style={styles.selectAssistant}
+            options={this.state.assistants}
+            textStyle={styles.selectAssistantFont}
+            adjustFrame={this.adjustFrame.bind(this)}
+          />
           <TextInput
             style={styles.name}
             onFocus={() => this.setState({ description: '' })}
