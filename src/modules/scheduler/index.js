@@ -29,6 +29,7 @@ export default class Scheduler extends Component {
     this.state = {
       items: {},
     };
+    console.log('Let there be props ' + JSON.stringify(props));
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
@@ -84,6 +85,13 @@ export default class Scheduler extends Component {
     );
   };
 
+  onDismissEventCreate = (date, newData) => {
+    this.props.navigator.dismissLightBox();
+    const items = this.state.items;
+    items[date] = newData;
+    this.setState({ items });
+  };
+
   daysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
   }
@@ -125,26 +133,34 @@ export default class Scheduler extends Component {
     console.log(JSON.stringify(this.state.items));
   }
 
-  async onAddPressed(date) {
-    try {
-      const value = await AsyncStorage.getItem(date);
+  onAddPressed(date) {
+    this.props.navigator.showLightBox({
+      screen: 'Scheduler.create', // unique ID registered with Navigation.registerScreen
+      passProps: { onDismiss: this.onDismissEventCreate.bind(this), date }, // simple serializable object that will pass as props to the lightbox (optional)
+      style: {
+        backgroundBlur: 'dark', // 'dark' / 'light' / 'xlight' / 'none' - the type of blur on the background
+        backgroundColor: 'black', // tint color for the background, you can specify alpha here (optional)
+      },
+    });
+    // try {
+    //   const value = await AsyncStorage.getItem(date);
 
-      console.log(value);
-      let parsedInfo = [];
-      if (value !== null) {
-        // We have data!!
-        console.log(value);
-        parsedInfo = JSON.parse(value);
-      }
-      parsedInfo.push({ type: 'ASSISTANT', height: 50, name: 'Testing! ' + date });
+    //   console.log(value);
+    //   let parsedInfo = [];
+    //   if (value !== null) {
+    //     // We have data!!
+    //     console.log(value);
+    //     parsedInfo = JSON.parse(value);
+    //   }
+    //   parsedInfo.push({ type: 'ASSISTANT', height: 50, name: 'Testing! ' + date });
 
-      AsyncStorage.setItem(date, JSON.stringify(parsedInfo));
-      console.log(this.loadItemsForMonth);
-      this.loadItemsForMonth({ dateString: date });
-    } catch (error) {
-      // Error retrieving data
-      console.log(error.message);
-    }
+    //   AsyncStorage.setItem(date, JSON.stringify(parsedInfo));
+    //   console.log(this.loadItemsForMonth);
+    //   this.loadItemsForMonth({ dateString: date });
+    // } catch (error) {
+    //   // Error retrieving data
+    //   console.log(error.message);
+    // }
   }
 
   renderItem(item) {
@@ -158,7 +174,7 @@ export default class Scheduler extends Component {
     } else if (item.type === 'ADD_EVENT') {
       return (
         <View style={styles.add}>
-          <AddButon date={item.date} onAddPressed={this.onAddPressed} title="Add Event" />
+          <AddButon date={item.date} onAddPressed={() => this.onAddPressed(item.date)} title="Add Event" />
         </View>
       );
     }

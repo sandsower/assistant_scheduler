@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { TextInput, View, Button, AsyncStorage, Dimensions, Text, StyleSheet } from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
+
 import { ASSISTANTS_KEY } from '../../../constants/strings';
 
 const styles = StyleSheet.create({
@@ -34,29 +36,50 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class CreateAssistants extends Component {
+export default class CreateEvent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: 'Create Assistant',
-      text: 'Name',
+      assistants: [],
+      assistant: '',
+      description: 'Description',
     };
+    this.loadAssistants();
   }
 
-  async create() {
+  async loadAssistants() {
     try {
       const assistants = await AsyncStorage.getItem(ASSISTANTS_KEY);
       let parsedAssistants = [];
       if (assistants !== null) {
-        parsedAssistants = JSON.parse(assistants);
+        const tempAssistants = JSON.parse(assistants);
+        tempAssistants.forEach(assistant => {
+          console.log('Check assistant: ' + assistant.name);
+          parsedAssistants.push(assistant.name);
+        });
       }
-      parsedAssistants.push({
-        name: this.state.text,
+      console.log('Parsed assistants! ' + JSON.stringify(parsedAssistants));
+      this.setState({ assistants: parsedAssistants });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async create() {
+    try {
+      const events = await AsyncStorage.getItem(this.props.date);
+      let parsedEvents = [];
+      if (parsedEvents !== null) {
+        parsedEvents = JSON.parse(events);
+      }
+      parsedEvents.push({
+        assistant: this.state.assistant,
+        description: this.state.description,
         creationDate: new Date().getTime(),
         updateDate: new Date().getTime(),
       });
-      await AsyncStorage.setItem(ASSISTANTS_KEY, JSON.stringify(parsedAssistants));
-      this.props.onDismiss();
+      await AsyncStorage.setItem(this.props.date, JSON.stringify(parsedEvents));
+      this.props.onDismiss(this.props.date, parsedEvents);
     } catch (error) {
       console.log(error.message);
     }
@@ -67,11 +90,12 @@ export default class CreateAssistants extends Component {
       <View style={styles.container}>
         <View style={{ flex: 8 }}>
           <Text style={styles.title}>{this.props.title}</Text>
+          <ModalDropdown style={styles.name} options={this.state.assistants} />
           <TextInput
             style={styles.name}
-            onFocus={() => this.setState({ text: '' })}
-            onChangeText={text => this.setState({ text })}
-            value={this.state.text}
+            onFocus={() => this.setState({ description: '' })}
+            onChangeText={description => this.setState({ description })}
+            value={this.state.description}
           />
         </View>
         <View style={{ flex: 2 }}>
@@ -79,7 +103,7 @@ export default class CreateAssistants extends Component {
             onPress={() => {
               this.create();
             }}
-            title="Add Assistant"
+            title="Create event"
             style={styles.button}
           />
         </View>

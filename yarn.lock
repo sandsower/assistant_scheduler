@@ -3616,6 +3616,12 @@ react-native-linear-gradient@^2.4.0:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-modal-dropdown@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-modal-dropdown/-/react-native-modal-dropdown-0.6.1.tgz#a5e4255ad26f3837a7a23fcf2b851187c24850ed"
+  dependencies:
+    prop-types "^15.6.0"
+
 react-native-navbar@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/react-native-navbar/-/react-native-navbar-2.1.0.tgz#4f21e947501ce5cf4563a29914cb3192db35a647"
