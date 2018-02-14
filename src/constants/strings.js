@@ -1,0 +1,1 @@
+export const ASSISTANTS_KEY = 'ASSISTANTS';

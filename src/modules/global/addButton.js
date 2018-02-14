@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from 'react-native';
 
-const AddButton = ({ onAddPressed, date }) => {
+const AddButton = ({ onAddPressed, date, title }) => {
   return (
     <Button
       onPress={() => {
         onAddPressed(date);
       }}
-      title="Add event"
+      title={title}
       color="#00adf5"
     />
   );

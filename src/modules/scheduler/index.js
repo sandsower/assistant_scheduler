@@ -158,7 +158,7 @@ export default class Scheduler extends Component {
     } else if (item.type === 'ADD_EVENT') {
       return (
         <View style={styles.add}>
-          <AddButon date={item.date} onAddPressed={this.onAddPressed} />
+          <AddButon date={item.date} onAddPressed={this.onAddPressed} title="Add Event" />
         </View>
       );
     }
