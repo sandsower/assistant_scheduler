@@ -25,3 +25,4 @@ public class MainApplication extends NavigationApplication {
     return "index";
   }
 }
+`
